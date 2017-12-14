@@ -1,0 +1,146 @@
+<html>
+<head></head>
+<body>
+<script src="/bower_components/jquery/dist/jquery.min.js"></script>
+<script src="/javascripts/RequestUtils.js"></script>
+<script>
+    function multiArrayRequestOneResponse() {
+        var req = new RU();
+        var requests = [
+            {
+                url: "http://www.allinmd.cn/call/conference/index/getMapListV4/",
+                type: "GET"
+            },
+            {
+                url: "http://www.allinmd.cn/call/search/searchHot/",
+                type: "GET",
+                param: {a: 5}
+            }
+        ];
+        req.postRequest(requests).then(function (data) {
+            console.log("----response-----");
+            console.log(data);
+        })
+    }
+
+
+    function multiObjectRequestOneResponse() {
+        var req = new RU();
+        var requests = {
+            mapList: {
+                url: "http://www.allinmd.cn/call/conference/index/getMapListV4/",
+                type: "GET"
+            },
+            searchHot: {
+                url: "http://www.allinmd.cn/call/search/searchHot/",
+                type: "GET",
+                param: {a: 5}
+            }
+        };
+        req.postRequest(requests).then(function (data) {
+            console.log("----response-----");
+            console.log(data);
+        })
+    }
+
+    function bigPipeResponse() {
+        var req = new RU();
+        var bp = new Bigpipe();
+        bp.ready("mapList",function(data){
+            console.log("mapList received" + data)
+        });
+
+
+
+        bp.ready("searchHot",function(data){
+                    console.log("searchHot received" + data)
+                });
+
+        bp.ready("searchHot",function(data){
+                    console.log("searchHot2 received" + data)
+                });
+        var requests = {
+            mapList:{
+                url: "http://www.allinmd.cn/call/conference/index/getMapListV4/",
+                type: "GET",
+                success:function(data){
+                    console.log(data.key)
+                    console.log(new Date().valueOf())
+                    console.log(data);
+                },
+                fail:function(){
+                    console.log("err");
+                }
+            },
+            searchHot:{
+                url: "http://www.allinmd.cn/call/search/searchHot/",
+                type: "GET",
+                param: {a: 5},
+                success:function(data){
+                    console.log(data.key)
+                    console.log(new Date().valueOf())
+                    console.log(data);
+                },
+                fail:function(){
+                    console.log("err");
+                }
+            },
+            schedule:{
+                url:"http://www.allinmd.cn/call/navigation/scheduling/json_list/",
+                type:"post",
+                param:{paramJson:JSON.stringify({"navigationType":2,"visitSiteId":1,"customerId":"","sessionCustomerId":""})},
+                success:function(data){
+                    console.log(data.key)
+                    console.log(new Date().valueOf())
+                    console.log(data);
+                },
+                fail:function(){
+                    console.log("err");
+                }
+            }
+        };
+        req.bigPipeRequest(requests)
+    }
+
+
+</script>
+<h1>
+    合并请求演示
+</h1>
+
+<button onclick="multiArrayRequestOneResponse()">数组形式-同步多请求返回响应包</button>
+<br/>
+<button onclick="multiObjectRequestOneResponse()">对象形式-同步返回多请求响应包</button>
+<br/>
+<button onclick="bigPipeResponse()">jsonp方式异步返回数据包</button>
+<br/>
+<a href="/ncall/bigpipetest/" target="_blank">在新页面中查看bigpipe</a>
+<br/>
+
+
+<h3>响应的两种方案</h3>
+<ul>
+    <li>1.同步响应</li>
+    <li>2.异步响应</li>
+</ul>
+
+---- bigPipe
+<h3>
+    </h3>
+<ul>
+    <li>一、 页面使用bigPipe</li>
+    <li>二、 ajax使用bigPipe</li>
+</ul>
+
+
+回调的解决方案
+bigPipe 的回调 bp.view ();
+
+jsonp
+
+ajax
+
+<h3>多个请求合并 应 业务不相关联, 互相独立</h3>
+
+</body>
+</html>
